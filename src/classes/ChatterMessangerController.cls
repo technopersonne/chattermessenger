@@ -2,7 +2,7 @@
  * @author ashok
  * Chatter Messenger App.
  * 
- * Description: Test Class covering chatter messenger code.
+ * Description: Controller Class covering chatter messenger logic. 
  * 
  * Copyright:  Copyright 2010
  * 
