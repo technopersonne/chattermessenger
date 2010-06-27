@@ -1,13 +1,30 @@
+/**
+ * @author ashok
+ * Chatter Messenger App.
+ * 
+ * Description: Utility class containing utility methods for messenger app.
+ * 
+ * Copyright:  Copyright 2010
+ * 
+ * This file is part of Chatter Messenger. 
+ * 
+ * Chatter Messenger is free software: you can redistribute it and/or modify
+ * it under the terms of the New BSD license.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 public class ChatterMessangerUtil {
 	
-	Public static final String STATUS_ONLINE = 'Online';
-	Public static final String STATUS_OFFLINE = 'Offline';
-	Public static final String STATUS_INVISIBLE = 'Invisible';
-	Public static final String STATUS_BUSY = 'Do Not Disturb';
+	public static final String STATUS_ONLINE = 'Online';
+	public static final String STATUS_OFFLINE = 'Offline';
+	public static final String STATUS_INVISIBLE = 'Invisible';
+	public static final String STATUS_BUSY = 'Do Not Disturb';
 	// Time in minutes
-	Public static final Integer LOGOUT_INTERVAL = 15;
+	public static final Integer LOGOUT_INTERVAL = 15;
 	
-	public static ChatterMessanger__c createChatterMessangerObj(User user) {		
+	public static ChatterMessanger__c createChatterMessangerObj(User user) {	 	
 		ChatterMessanger__c chatterMsger = new ChatterMessanger__c(Name=user.Name, Chatter_User__c = user.Id, Status__c = STATUS_ONLINE);
 		insert chatterMsger;
 		return chatterMsger;
@@ -23,26 +40,12 @@ public class ChatterMessangerUtil {
 		} 
 		return chatterMsger;
 	}
-	
-	public static List<EntitySubscription> getFollowers(String userId)  {
-		List<EntitySubscription> followers = null;
-         try {
-         // All users who are following us
-        	followers = [select id, subscriberid, subscriber.name, subscriber.AboutMe
-                            from EntitySubscription  where parentid = :userId    //set the id of the user who you want to see all their followers
-                            order by subscriber.name]; 
-         } catch(QueryException e) {
-         	followers  = new List<EntitySubscription>();
-         }  
-			                                             
-        return followers;
-	}
-	
+		
 	public static Map<String, EntitySubscription> getFollowersMap(String userId)  {
          // All users who are following us
         List<EntitySubscription> followers = [select id, subscriberid, subscriber.name, subscriber.AboutMe
                                         from EntitySubscription  where parentid = :userId    //set the id of the user who you want to see all their followers
-                                        order by subscriber.name];
+                                        order by subscriberid];
                                            
 		Map<String, EntitySubscription>  followersMap =  new Map<String, EntitySubscription>();
 		                                     
@@ -54,7 +57,7 @@ public class ChatterMessangerUtil {
 	
 	 public static Map<String, EntitySubscription> getFollowingUserList(String userId) {
         List<EntitySubscription> followingES = [select id, parentid, subscriberid, parent.name from EntitySubscription 
-                                                where subscriberid = :userId order by parent.name];
+                                                where subscriberid = :userId order by parentid];
 
         Map<String, EntitySubscription> following = new Map<String, EntitySubscription> ();
         // filter out all the followings users.
@@ -88,13 +91,6 @@ public class ChatterMessangerUtil {
 		}
 			
 		return chatterMsgrMap == null ? new Map<String,ChatterMessanger__c>() : chatterMsgrMap;
-	}
-
-	public static  void createChatMessage(String fromUserId, String toUserId, String msgFromUserId, String message) {
-		ChatMessageRecord__c chatMsgRecord = new ChatMessageRecord__c(From_User__c = fromUserId, To_User__c = toUserId,
-											 Message_From__c = msgFromUserId, Message__c = message ,
-											 Message_Post_Date__c  = System.today() ); 
-		
 	}
 	
 	public static ChatMessageRecord__c getEmptyChatMessageRecord(String fromUserId) {
