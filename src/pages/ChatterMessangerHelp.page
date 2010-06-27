@@ -1,3 +1,20 @@
+<!-- 
+ * @author ashok
+ * Chatter Messenger App.
+ * 
+ * Description: Messenger helper page  
+ * 
+ * Copyright:  Copyright 2010
+ * 
+ * This file is part of Chatter Messenger. 
+ * 
+ * Chatter Messenger is free software: you can redistribute it and/or modify
+ * it under the terms of the New BSD license. 
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ -->
 <apex:page sidebar="false" showHeader="true" >
   <apex:sectionHeader title="About Chatter Messenger"/>
     

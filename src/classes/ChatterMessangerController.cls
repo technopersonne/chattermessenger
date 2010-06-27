@@ -1,3 +1,20 @@
+/**
+ * @author ashok
+ * Chatter Messenger App.
+ * 
+ * Description: Test Class covering chatter messenger code.
+ * 
+ * Copyright:  Copyright 2010
+ * 
+ * This file is part of Chatter Messenger. 
+ * 
+ * Chatter Messenger is free software: you can redistribute it and/or modify
+ * it under the terms of the New BSD license.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 public class ChatterMessangerController {
 
     public String currentUserId { get; private set; }
@@ -15,8 +32,12 @@ public class ChatterMessangerController {
     
     private Map<String,ChatterMessanger__c> chatterMsgr;
     private Map<String, EntitySubscription> followerMap;
+    // For creating test data
+    public boolean isTest;
+    public String testUserId;
     
-    public ChatterMessangerController() {       
+    public ChatterMessangerController() {  
+    	isTest = false;     
     }
     
     public void init() {
@@ -24,9 +45,8 @@ public class ChatterMessangerController {
         showShareBtn = true;
         selectedUserId = null;
         showEditBtn = true;
-        currentUserId = Userinfo.getUserId();
+        currentUserId = isTest ? testUserId : Userinfo.getUserId();
         currentUser = [Select Name, State, PostalCode, Phone, Email, Country, City, AboutMe From User where id =: currentUserId];
-        //currentChatterMgr = new ChatterMessanger__c(Status__c =ChatterMessangerUtil.STATUS_ONLINE, Chatter_User__c =currentUserId, Name = currentUser.name);      
         currentChatterMgr = ChatterMessangerUtil.getChatterMessangerObj(currentUserId, currentUser.Name, ChatterMessangerUtil.STATUS_ONLINE);
         if(currentChatterMgr.id != null && currentChatterMgr.Status__c == ChatterMessangerUtil.STATUS_OFFLINE) {
             currentChatterMgr.Status__c = ChatterMessangerUtil.STATUS_ONLINE;
@@ -91,14 +111,14 @@ public class ChatterMessangerController {
             chatHistoryMessage.Chat_History__c = message;
         }   
         
-        // refresh the contach list status..
+        // refresh the contact list status..
         refresh();
     }
     
     public void clearMyChatHistory() {
         ChatterMessangerUtil.clearCurrentUserChatMessageRecords(currentUserId, selectedUserId);
         refreshChatMessages();
-        // refresh the contach list status..
+        // refresh the contact list status..
         refresh();
     }
     
@@ -106,7 +126,6 @@ public class ChatterMessangerController {
         followerMap = ChatterMessangerUtil.getFollowersMap(currentUserId);
         
         List<User> userList = ChatterMessangerUtil.getChatterContactList(currentUserId);
-        //chatterMsgr = ChatterMessangerUtil.getChatterMessangerMapForEntitySubscription(followerList);
         chatterMsgr = ChatterMessangerUtil.getChatterMessangerMapForAvailableContacts(currentUserId);
         
         chatterContacts = new List<ChatterContactWrapper>();
@@ -127,15 +146,15 @@ public class ChatterMessangerController {
             }
         }
         refresh();
-        //showShareBtn = followerMap.containsKey(selectedUserId);
     }
     
     public void resetUserStatus() {
         update currentChatterMgr;
-        // refresh the contach list status..
+        // refresh the contact list status..
         refresh();
     }
     
+    // Check for any available recent chat request. 
     public boolean checkForChatRequest() {
         boolean flag = false;
         ChatMessageRecord__c msgRecord = ChatterMessangerUtil.getLatestChatRequest(chatterMsgr.keySet(), currentUserId);
@@ -147,6 +166,7 @@ public class ChatterMessangerController {
         return flag;
     }   
     
+    // Refersh Chatter messenger page.
     public void chatterMessageRefersh() {
         if(selectedUserId == null || selectedUserId.trim().length() <= 0) {
             if(!checkForChatRequest()) {
@@ -162,6 +182,7 @@ public class ChatterMessangerController {
         refreshChatMessages();
     }
     
+    // Check for user status and update status if required. 
     public void checkUserStatus() {
         checkIsUserOnLine();
         checkOtherUserAreOnline();
@@ -192,6 +213,7 @@ public class ChatterMessangerController {
         update updateList;
     }
     
+    // Method to share the chat history messanges on the chatter wall.
     public void shareChat() {
         List<ChatMessageRecord__c> chatMsgRecs = ChatterMessangerUtil.getChatMessageRecords(currentUserId, selectedUserId);
         
@@ -213,8 +235,6 @@ public class ChatterMessangerController {
                     } else {
                         FeedComment fcomment = new FeedComment();
                         fcomment.FeedItemId = uf.id;
-                        //fcomment.ParentId = msgRec.Message_From__c;
-                        //fcomment.CreatedById = msgRec.Message_From__c;
                         fcomment.CommentBody = ' - '+ msgRec.Message_From__r.Name + ' said ' + msgRec.Message__c;
                         feedCommentList.add(fcomment);
                         msgRec.Shared__c = true;    
